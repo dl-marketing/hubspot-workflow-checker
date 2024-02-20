@@ -6,10 +6,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
+
       - name: Check Last Timestamp
         run: |
-          LAST_TIMESTAMP=$(tail -n 1 webhook-timestamps.txt | cut -d' ' -f5)
+          if [ -f webhook-timestamps.txt ]; then
+            LAST_TIMESTAMP=$(tail -n 1 webhook-timestamps.txt | awk '{print $5}')
+            if [ -z "$LAST_TIMESTAMP" ]; then
+              echo "Timestamp not found."
+              exit 1
+            fi
+          else
+            echo "webhook-timestamps.txt does not exist."
+            exit 1
+          fi
+
           CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           THRESHOLD=$(date -u -d "1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")
           
