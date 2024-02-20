@@ -1,0 +1,21 @@
+name: Log Webhook Timestamp
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [webhook-received]
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Log Timestamp
+        run: |
+          echo "Webhook received at $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> webhook-timestamps.txt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add webhook-timestamps.txt
+          git commit -m "Log webhook timestamp"
+          git push
