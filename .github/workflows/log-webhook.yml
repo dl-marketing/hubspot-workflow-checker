@@ -15,7 +15,7 @@ jobs:
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
-          git remote set-url origin https://dl-marketing:${{ secrets.HUBSPOT_PAT }}@github.com/hubspot-workflow-checker.git
+          git remote set-url origin https://dl-marketing:${{ secrets.HUBSPOT_PAT }}@github.com/dl-marketing/hubspot-workflow-checker.git
       
       - name: Log Timestamp and Push
         run: |
