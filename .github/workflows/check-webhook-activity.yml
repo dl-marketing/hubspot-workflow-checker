@@ -10,10 +10,16 @@ jobs:
       - name: Check Last Timestamp
         run: |
           if [ -f webhook-timestamps.txt ]; then
-            LAST_TIMESTAMP=$(tail -n 1 webhook-timestamps.txt | awk '{print $5}')
-            if [ -z "$LAST_TIMESTAMP" ]; then
-              echo "Timestamp not found."
+            LAST_LINE=$(tail -n 1 webhook-timestamps.txt)
+            if [ -z "$LAST_LINE" ]; then
+              echo "webhook-timestamps.txt is empty or last line is not valid."
               exit 1
+            else
+              LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $5}')
+              if [ -z "$LAST_TIMESTAMP" ]; then
+                echo "Timestamp not found in the last line."
+                exit 1
+              fi
             fi
           else
             echo "webhook-timestamps.txt does not exist."
