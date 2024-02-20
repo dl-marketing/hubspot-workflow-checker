@@ -15,7 +15,6 @@ jobs:
               echo "webhook-timestamps.txt is empty or the last line is not valid."
               exit 1
             else
-              # Extracting the timestamp directly from the known format
               LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $(NF)}')
               if [ -z "$LAST_TIMESTAMP" ]; then
                 echo "Timestamp not found in the last line."
@@ -27,13 +26,13 @@ jobs:
             exit 1
           fi
 
-          # Comparing the last timestamp with the threshold
           CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           THRESHOLD=$(date -u -d "1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")
           
           if [[ "$LAST_TIMESTAMP" < "$THRESHOLD" ]]; then
             echo "No webhook in the last hour."
-            # Here, you can add commands to trigger an alert, like sending an email or posting to Slack.
+            # Send a webhook to the specified URL
+            curl -X POST https://hooks.zapier.com/hooks/catch/13424792/3e8oc4x/ -H 'Content-Type: application/json' -d '{"message": "No webhook received in the last hour"}'
           else
             echo "Webhook received within the last hour."
           fi
