@@ -13,13 +13,19 @@ jobs:
         with:
           token: ${{ secrets.HUBSPOT_PAT }}  # Use your PAT here
       
-      - name: Log Timestamp
+      - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+      
+      - name: Log Timestamp
+        run: |
           echo "Webhook received at $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> webhook-timestamps.txt
           git add webhook-timestamps.txt
           git commit -m "Log webhook timestamp"
-          git push
-
-
+          
+      - name: Pull changes from the repository
+        run: git pull --rebase
+      
+      - name: Push changes
+        run: git push
