@@ -1,5 +1,7 @@
 name: Check Webhook Activity
-on: workflow_dispatch
+on: 
+  schedule:
+    - cron: '0 * * * *'
 jobs:
   check:
     runs-on: ubuntu-latest
