@@ -15,7 +15,7 @@ jobs:
               echo "webhook-timestamps.txt is empty or last line is not valid."
               exit 1
             else
-              LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $5}')
+              LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $NF}')
               if [ -z "$LAST_TIMESTAMP" ]; then
                 echo "Timestamp not found in the last line."
                 exit 1
