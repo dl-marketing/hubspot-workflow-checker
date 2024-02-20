@@ -10,17 +10,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.HUBSPOT_PAT }}  # Use your PAT here
       
-      - name: Set up Git with PAT
+      - name: Log Timestamp
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git remote set-url origin https://dl-marketing:${{ secrets.HUBSPOT_PAT }}@github.com/dl-marketing/hubspot-workflow-checker.git
-      
-      - name: Log Timestamp and Push
-        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           echo "Webhook received at $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> webhook-timestamps.txt
           git add webhook-timestamps.txt
           git commit -m "Log webhook timestamp"
           git push
+
 
