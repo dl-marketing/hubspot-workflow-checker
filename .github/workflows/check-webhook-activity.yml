@@ -1,0 +1,23 @@
+name: Check Webhook Activity
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs at the start of every hour
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Check Last Timestamp
+        run: |
+          LAST_TIMESTAMP=$(tail -n 1 webhook-timestamps.txt | cut -d' ' -f5)
+          CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          THRESHOLD=$(date -u -d "1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")
+          
+          if [[ "$LAST_TIMESTAMP" < "$THRESHOLD" ]]; then
+            echo "No webhook in the last hour."
+            # Here, you would add a command to trigger an alert, such as sending an email or posting to Slack.
+          else
+            echo "Webhook received within the last hour."
