@@ -33,8 +33,14 @@ jobs:
           
           if [[ "$LAST_TIMESTAMP" < "$THRESHOLD" ]]; then
             echo "No webhook in the last hour."
-            # Send a webhook to the specified URL
-            curl -X POST https://hooks.zapier.com/hooks/catch/13424792/3e8oc4x/ -H 'Content-Type: application/json' -d '{"message": "No webhook received in the last hour"}'
+            # Before sending a webhook, check if current UTC time in EST is within business hours
+            EST_HOUR=$(date -u -d '5 hours ago' +'%H') # Convert current UTC time to EST hour
+            if [[ "$EST_HOUR" -ge 9 && "$EST_HOUR" -lt 18 ]]; then
+              echo "Within business hours, sending webhook..."
+              # Send a webhook to the specified URL
+              curl -X POST https://hooks.zapier.com/hooks/catch/13424792/3e8oc4x/ -H 'Content-Type: application/json' -d '{"message": "No webhook received in the last hour"}'
+            else
+              echo "Outside business hours, not sending webhook."
+            fi
           else
             echo "Webhook received within the last hour."
-          fi
