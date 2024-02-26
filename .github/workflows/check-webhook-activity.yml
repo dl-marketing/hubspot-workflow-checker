@@ -11,36 +11,37 @@ jobs:
 
       - name: Check Last Timestamp
         run: |
-          if [ -f webhook-timestamps.txt ]; then
+          if [ -f webhook-timestamps.txt ]; then # Opening if for file check
             LAST_LINE=$(tail -n 1 webhook-timestamps.txt)
-            if [ -z "$LAST_LINE" ]; then
+            if [ -z "$LAST_LINE" ]; then # Opening if for line check
               echo "webhook-timestamps.txt is empty or the last line is not valid."
               exit 1
-            else
+            else # Closing else for line check
               LAST_TIMESTAMP=$(echo "$LAST_LINE" | awk '{print $(NF)}')
-              if [ -z "$LAST_TIMESTAMP" ]; then
+              if [ -z "$LAST_TIMESTAMP" ]; then # Opening if for timestamp check
                 echo "Timestamp not found in the last line."
                 exit 1
-              fi
-            fi
-          else
+              fi # Closing if for timestamp check
+            fi # Closing if for line check
+          else # Closing else for file check
             echo "webhook-timestamps.txt does not exist."
             exit 1
-          fi
+          fi # Closing if for file check
 
           CURRENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           THRESHOLD=$(date -u -d "1 hour ago" +"%Y-%m-%dT%H:%M:%SZ")
           
-          if [[ "$LAST_TIMESTAMP" < "$THRESHOLD" ]]; then
+          if [[ "$LAST_TIMESTAMP" < "$THRESHOLD" ]]; then # Opening if for timestamp comparison
             echo "No webhook in the last hour."
             # Before sending a webhook, check if current UTC time in EST is within business hours
             EST_HOUR=$(date -u -d '5 hours ago' +'%H') # Convert current UTC time to EST hour
-            if [[ "$EST_HOUR" -ge 9 && "$EST_HOUR" -lt 18 ]]; then
+            if [[ "$EST_HOUR" -ge 9 && "$EST_HOUR" -lt 18 ]]; then # Opening if for business hours check
               echo "Within business hours, sending webhook..."
               # Send a webhook to the specified URL
               curl -X POST https://hooks.zapier.com/hooks/catch/13424792/3e8oc4x/ -H 'Content-Type: application/json' -d '{"message": "No webhook received in the last hour"}'
-            else
+            else # Closing else for business hours check
               echo "Outside business hours, not sending webhook."
-            fi
-          else
+            fi # Closing if for business hours check
+          else # Closing else for timestamp comparison
             echo "Webhook received within the last hour."
+          fi # Closing if for timestamp comparison
